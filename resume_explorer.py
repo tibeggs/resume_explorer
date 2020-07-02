@@ -13,26 +13,30 @@ import PyPDF2
 import shutil
 import pandas as pd
 
-
+#set file path to setup
 filepath ="C:\\Users\\Timothy\\Desktop\\resume runner\\"
 
+#set sas and python keywords
 pythonKeywords=["python","Python"]
 sasKeywords=["SAS","sas","Sas"]
 
+#create combined keyword list
 keywords=pythonKeywords+sasKeywords
 
+#create filepath directions
 filepathInput=filepath+"Input\\"
 filepathContinue=filepath+"Continue\\"
 filepathDisregard=filepath+"Disregard\\"
 
+#read all files in input directory
 files=os.listdir(filepathInput)
 
+#create dataframe with all file names and counter for sas and python
 filedf=pd.DataFrame(data={'file':files})
 filedf['python']=0
 filedf['sas']=0
 
-#f="Tiffany Negri Resume.docx"
-
+#check for if keywords appear in paragraph or page
 for f in files:
     if ".docx" in f:
         document=docx.Document(filepathInput+f)
@@ -40,19 +44,12 @@ for f in files:
             for p in document.paragraphs:
                 if k in p.text:
                     kcount=p.text.count(k)
-                    #print(p.text)
-                    #print()
                     print(f+" contains "+k)
                     if k in pythonKeywords:
                         filedf.loc[filedf['file']==f,'python']+=kcount
                     if k in sasKeywords:
                         filedf.loc[filedf['file']==f,'sas']+=kcount
-        #os.remove(filepathInput+f)
-                    #need to change this to wait for end of file
-                    #os.rename(filepathInput+f,filepathContinue+f)
-                #else:
-                    #need to change this to wait for end of file
-                    #os.rename(filepathInput+f,filepathDisregard+f)
+
     if ".pdf" in f:
         pdfFileObj=open(filepathInput+f, mode="rb")
         pdfReader=PyPDF2.PdfFileReader(pdfFileObj)
@@ -60,7 +57,6 @@ for f in files:
             print(p)
             pdfPage=pdfReader.getPage(p)
             pageText=pdfPage.extractText()
-            #print(pageText)
             for k in keywords:
                 if k in pageText:
                     kcount=pageText.count(k)
@@ -70,19 +66,12 @@ for f in files:
                     if k in sasKeywords:
                         filedf.loc[filedf['file']==f,'sas']+=kcount
         pdfFileObj.close()
-        #os.remove(filepathInput+f)
-                    #need to change this to wait for end of file
-                    #pdfFileObj.close()
-                    #shutil.move(filepathInput+f,filepathContinue+f)
-                #else:
-                    #need to change this to wait for end of file
-                    #pdfFileObj.close()
-                    #shutil.move(filepathInput+f,filepathDisregard+f)
 
-#document=docx.Document()
+#subset file dataframe into continuers and Disregard
 fileCon=filedf.loc[(filedf['sas']>2) | (filedf['python']>3)]
 fileDis=filedf.loc[(filedf['sas']<=2) & (filedf['python']<=3)]
 
+#move files to appropriate loaction
 for f1 in fileCon['file']:
     shutil.move(filepathInput+f1,filepathContinue+f1)
 for f2 in fileDis['file']:
