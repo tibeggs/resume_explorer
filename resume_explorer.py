@@ -16,6 +16,7 @@ import pandas as pd
 import tkinter as tk
 import configparser
 import json
+import textract
 
 
 #set file path to setup
@@ -157,10 +158,23 @@ for f in files:
                     if k in rGUI.sasKeywords:
                         filedf.loc[filedf['file']==f,'sas']+=kcount
         pdfFileObj.close()
+        
+fileDC=filedf.loc[(filedf['sas']==0) | (filedf['python']==0)]
+for f in fileDC['file']:
+    text=str(textract.process(filepathInput+f))
+    for k in rGUI.keywords:
+        if k in text:
+            kcount=text.count(k)
+            print(f+" contains "+k)
+            if k in rGUI.pythonKeywords:
+                filedf.loc[filedf['file']==f,'python']+=kcount
+            if k in rGUI.sasKeywords:
+                filedf.loc[filedf['file']==f,'sas']+=kcount
+        
 
 #subset file dataframe into continuers and Disregard
-fileCon=filedf.loc[(filedf['sas']>2) | (filedf['python']>3)]
-fileDis=filedf.loc[(filedf['sas']<=2) & (filedf['python']<=3)]
+fileCon=filedf.loc[(filedf['sas']>rGUI.sasC) | (filedf['python']>rGUI.pythonC)]
+fileDis=filedf.loc[(filedf['sas']<=rGUI.sasC) & (filedf['python']<=rGUI.pythonC)]
 
 #move files to appropriate loaction
 for f1 in fileCon['file']:
