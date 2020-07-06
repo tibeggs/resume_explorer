@@ -143,12 +143,18 @@ filepathDisregard=rGUI.filepath+"Disregard/"
 
 #read all files in input directory
 files=os.listdir(filepathInput)
+for f in files:
+    if f.endswith(".doc"):
+        shutil.move(filepathInput+f,filepathContinue+f+"x")
+files=os.listdir(filepathInput)
 
 #create dataframe with all file names and counter for sas and python
 filedf=pd.DataFrame(data={'file':files})
 filedf['python']=0
 filedf['sas']=0
 
+
+        
 #check for if keywords appear in paragraph or page
 for f in files:
     if ".docx" in f:
