@@ -17,6 +17,8 @@ import tkinter as tk
 import configparser
 import json
 import textract
+from win32com import client as wc
+
 
 
 #set file path to setup
@@ -58,6 +60,8 @@ class rGUI:
             rGUI.pythonKeywords=self.epk.get().split(" ")
             rGUI.sasKeywords=self.esk.get().split(" ")
             rGUI.keywords = rGUI.pythonKeywords+rGUI.sasKeywords
+            rGUI.pythonC=int(self.epc.get())
+            rGUI.sasC=int(self.esc.get())
             window.destroy()
             
         self.window=window
@@ -72,24 +76,40 @@ class rGUI:
         window.grid_rowconfigure(5,weight=1)
         
         lfp = tk.Label(window, text="Program Directory:", anchor="w",font="Arial 10")
-        lpk=tk.Label(window, text="Python Keywords (seperate with spaces):", anchor="w",font="Arial 10")
-        lsk=tk.Label(window, text="SAS Keywords (seperate with spaces):", anchor="w",font="Arial 10")
+        lpk=tk.Label(window, text="String 1 Keywords (separate with spaces):", anchor="w",font="Arial 10")
+        lpc=tk.Label(window, text="Number of Occurences of Values in String 1:", anchor="w",font="Arial 10")
+        lsk=tk.Label(window, text="String 2 Keywords (separate with spaces):", anchor="w",font="Arial 10")
+        lsc=tk.Label(window, text="Number of Occurences of Values in String 2:", anchor="w",font="Arial 10")
+        
 
         lfp.grid(row=1,column=0)
         lpk.grid(row=2,column=0)
-        lsk.grid(row=3,column=0)
+        lpc.grid(row=3,column=0)
+        lsk.grid(row=4,column=0)
+        lsc.grid(row=5,column=0)
         
         
         self.efp = tk.Entry(window, width=50)
         self.efp.insert(tk.END,rGUI.filepath)
+        
         self.epk = tk.Entry(window, width=50)
         self.epk.insert(tk.END,rGUI.pythonKeywords)
+        
+        self.epc = tk.Entry(window, width=50)
+        self.epc.insert(tk.END, rGUI.pythonC)
+        
         self.esk = tk.Entry(window, width=50)
         self.esk.insert(tk.END,rGUI.sasKeywords)
         
+        
+        self.esc = tk.Entry(window, width=50)
+        self.esc.insert(tk.END, rGUI.sasC)
+        
         self.efp.grid(row=1,column=1, sticky='ew')
         self.epk.grid(row=2,column=1, sticky='ew')
-        self.esk.grid(row=3,column=1, sticky='ew')
+        self.epc.grid(row=3, column=1, sticky='ew')
+        self.esk.grid(row=4,column=1, sticky='ew')
+        self.esc.grid(row=5,column=1, sticky='ew')
         
         buttonv = tk.Button(window, text = "Submit", command = lambda: close_all(self))
         buttonv.grid(row=6,column=0, columnspan=2)
@@ -117,9 +137,9 @@ if __name__=="__main__":
 
 
 #create filepath directions
-filepathInput=rGUI.filepath+"Input\\"
-filepathContinue=rGUI.filepath+"Continue\\"
-filepathDisregard=rGUI.filepath+"Disregard\\"
+filepathInput=rGUI.filepath+"Input/"
+filepathContinue=rGUI.filepath+"Continue/"
+filepathDisregard=rGUI.filepath+"Disregard/"
 
 #read all files in input directory
 files=os.listdir(filepathInput)
