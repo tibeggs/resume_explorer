@@ -8,7 +8,6 @@ Created on Wed Jul  1 22:30:56 2020
 """
 
 import os
-import sys
 import docx
 import PyPDF2
 import shutil
@@ -17,7 +16,12 @@ import tkinter as tk
 import configparser
 import json
 import textract
-from win32com import client as wc
+
+import win32com.client as win32
+from win32com.client import constants
+from glob import glob
+import re
+
 
 
 
@@ -137,18 +141,45 @@ if __name__=="__main__":
 
 
 #create filepath directions
-filepathInput=rGUI.filepath+"Input/"
-filepathContinue=rGUI.filepath+"Continue/"
-filepathDisregard=rGUI.filepath+"Disregard/"
+filepathInput=rGUI.filepath+"Input\\"
+filepathContinue=rGUI.filepath+"Continue\\"
+filepathDisregard=rGUI.filepath+"Disregard\\"
 
 #read all files in input directory
 files=os.listdir(filepathInput)
-for f in files:
-    if f.endswith(".doc"):
-        shutil.move(filepathInput+f,filepathContinue+f+"x")
-files=os.listdir(filepathInput)
+
+# Create list of paths to .doc files
+paths = glob(filepathInput+'*.doc', recursive=True)
+
+def save_as_docx(path):
+    # Opening MS Word
+    word = win32.gencache.EnsureDispatch('Word.Application')
+    doc = word.Documents.Open(path)
+    doc.Activate ()
+
+    # Rename path with .docx
+    new_file_abs = os.path.abspath(path)
+    new_file_abs = re.sub(r'\.\w+$', '.docx', new_file_abs)
+
+    # Save and Close
+    word.ActiveDocument.SaveAs(
+        new_file_abs, FileFormat=constants.wdFormatXMLDocument
+    )
+    doc.Close(False)
+
+for path in paths:
+    save_as_docx(path)
+    os.remove(path)
+
+
+
+#for f in files:
+#    if f.endswith(".doc"):
+#        shutil.move(filepathInput+f,filepathInput+f+"x")
+#files=os.listdir(filepathInput)
 
 #create dataframe with all file names and counter for sas and python
+files=os.listdir(filepathInput)
 filedf=pd.DataFrame(data={'file':files})
 filedf['python']=0
 filedf['sas']=0
@@ -211,6 +242,4 @@ for f2 in fileDis['file']:
         
         
         
-    
-            
     
