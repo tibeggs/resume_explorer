@@ -25,30 +25,6 @@ import re
 
 
 
-
-#set file path to setup
-#filepathdefault ="C:\\Users\\Timothy\\Desktop\\resume runner\\"
-#
-##set sas and python keywords
-#pythonKeywordsdefault=["python","Python"]
-#sasKeywordsdefault=["SAS","sas","Sas"]
-#
-##create combined keyword list
-#keywords=pythonKeywords+sasKeywords
-#
-##create filepath directions
-#filepathInput=filepath+"Input\\"
-#filepathContinue=filepath+"Continue\\"
-#filepathDisregard=filepath+"Disregard\\"
-#
-##read all files in input directory
-#files=os.listdir(filepathInput)
-#
-##create dataframe with all file names and counter for sas and python
-#filedf=pd.DataFrame(data={'file':files})
-#filedf['python']=0
-#filedf['sas']=0
-
 #function to pass multiple functions to single object
 def combine_funcs(*funcs):
     def combined_func(*args, **kwargs):
@@ -148,6 +124,8 @@ if __name__=="__main__":
 
 
 #create filepath directions
+if not rGUI.filepath.endswith("/") and not rGUI.filepath.endswith("\\"):
+    rGUI.filepath=rGUI.filepath+"/"
 filepathInput=rGUI.filepath+"Input\\"
 filepathContinue=rGUI.filepath+"Continue\\"
 filepathDisregard=rGUI.filepath+"Disregard\\"
@@ -166,7 +144,7 @@ def save_as_docx(path):
 
     # Rename path with .docx
     new_file_abs = os.path.abspath(path)
-    new_file_abs = re.sub(re.escape(r'\.\w+$'), '.docx', new_file_abs)
+    new_file_abs = re.sub(r'\.\w+$', '.docx', new_file_abs)
 
     # Save and Close
     word.ActiveDocument.SaveAs(
