@@ -16,6 +16,7 @@ import tkinter as tk
 import configparser
 import json
 import textract
+import sys
 
 import win32com.client as win32
 from win32com.client import constants
@@ -122,7 +123,13 @@ class rGUI:
 if __name__=="__main__":
     #define argument and data directories from config strings
     config=configparser.ConfigParser()
-    cpath=os.path.dirname(os.path.realpath(__file__))
+    if getattr(sys, 'frozen', False):
+        # frozen
+        cpath = os.path.dirname(sys.executable)  
+    else:
+        # unfrozen
+        cpath = os.path.dirname(os.path.realpath(__file__))
+    #cpath=os.path.dirname(os.path.realpath(__file__))
     config.read(cpath+"/r_config.ini")
     
     rGUI.pythonKeywords=json.loads(config.get('DEFAULT','cpythonKeywords'))
@@ -159,7 +166,7 @@ def save_as_docx(path):
 
     # Rename path with .docx
     new_file_abs = os.path.abspath(path)
-    new_file_abs = re.sub(r'\.\w+$', '.docx', new_file_abs)
+    new_file_abs = re.sub(re.escape(r'\.\w+$'), '.docx', new_file_abs)
 
     # Save and Close
     word.ActiveDocument.SaveAs(

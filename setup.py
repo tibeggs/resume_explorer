@@ -1,11 +1,18 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Jul  2 14:13:43 2020
+from cx_Freeze import setup, Executable
 
-@author: Timothy
-"""
+# Dependencies are automatically detected, but it might need
+# fine tuning.
+includefiles = ['r_config.ini']
+buildOptions = dict(packages = ['textract'], excludes = [])
 
-from distutils.core import setup
-import py2exe
+base = 'Console'
 
-setup(console=['resume_explorer.py'])
+executables = [
+    Executable('C:\\Users\\Timothy\\Documents\\GitHub\\resume_explorer\\resume_explorer.py', base=base, targetName = 'resume_runner.exe')
+]
+
+setup(name='resume_runner',
+      version = '1',
+      description = 'resume keyword scanner',
+      options = dict(build_exe = buildOptions),
+      executables = executables)
