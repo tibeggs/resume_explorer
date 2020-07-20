@@ -7,7 +7,9 @@ Scan .doc .pdf and .docx for keywords
 You will need a directory with the following folder structure
 
 ../Input
+
 ../Continue
+
 ../Disregard
 
 ### Prerequisites
